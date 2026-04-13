@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import Navbar from "./components/navbar";
+import ChildComponent from "./components/navbar/child/ChildComponent";
 import { IdCardIcon } from "lucide-react";
 
 function UserInfo({ name }: { name: string }) {
@@ -18,19 +19,30 @@ function MovieCard({ title, genre }: { title: string; genre: string }) {
 
 function App() {
   const [currentMenu, setCurrentMenu] = useState<string>("Dashboard");
+  const [submittedName, setSubmittedName] = useState<string>(""); // ✅ tambah
+  const [message, setMessage] = useState<string>("Hello dari Parent!"); // ✅ tambah
 
-  // Langkah 1 (Variabel)
-  const nama: string = "Budi";
-  const umur: number = 21;
+  const boxStyle = {
+    backgroundColor: "#1f2937",
+    padding: "16px",
+    borderRadius: "8px",
+    marginBottom: "16px",
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (text === "") {
+      alert("Nama tidak boleh kosong!");
+    } else {
+      setSubmittedName(text);
+    }
+  };
 
   // Langkah 3 (onClick)
   const [count, setCount] = useState<number>(0);
 
-  // Langkah 4 (Input)
   const [text, setText] = useState<string>("New User");
-
-  // Langkah 5 (Form)
-  const [submittedName, setSubmittedName] = useState<string>("");
 
   // Navbar state (punya kamu)
   const [notifStatus, setNotifStatus] = useState<boolean>(true);
@@ -44,17 +56,6 @@ function App() {
   // handle input
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
-  };
-
-  // handle submit
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (text === "") {
-      alert("Nama tidak boleh kosong!");
-    } else {
-      setSubmittedName(text);
-    }
   };
 
   const movies = [
@@ -74,7 +75,44 @@ function App() {
           <>
             <h2 className="text-2xl font-bold mb-4">🎬 Dashboard</h2>
 
-            {/* interaction + movie list tetap */}
+            {/* 🔹 Inline Styling */}
+            <div style={boxStyle}>
+              <p>Ini contoh inline styling</p>
+            </div>
+
+            {/* 🔹 useState (toggle warna) */}
+            <div className="mb-4">
+              <button onClick={() => setCount(count + 1)} className={`px-4 py-2 rounded ${count % 2 === 0 ? "bg-blue-500" : "bg-red-500"}`}>
+                Klik (warna berubah)
+              </button>
+              <p className="mt-2">Count: {count}</p>
+            </div>
+
+            {/* 🔹 Input */}
+            <div className="mb-4">
+              <input type="text" value={text} onChange={handleChange} className="px-3 py-2 rounded bg-gray-700 border border-gray-600" />
+              <p>Live: {text}</p>
+            </div>
+
+            {/* 🔹 Form */}
+            <form onSubmit={handleSubmit}>
+              <button className="bg-green-500 px-4 py-2 rounded">Submit</button>
+            </form>
+            <p className="mt-2">Hasil: {submittedName}</p>
+
+            {/* 🔹 Parent → Child */}
+            <ChildComponent message={message} onChangeText={() => setMessage("Diubah oleh Child 🚀")} />
+
+            {/* 🔹 Movie List */}
+            <div className="mt-8">
+              <h3 className="text-xl font-semibold mb-4">Popular Movies</h3>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {movies.map((movie) => (
+                  <MovieCard key={movie.id} title={movie.title} genre={movie.genre} />
+                ))}
+              </div>
+            </div>
           </>
         )}
 
